@@ -9,11 +9,6 @@ addEventListener("load", () =>
     screen.height = innerHeight;
 
     const context = screen.getContext("2d");
-    //context.fillStyle = "#ffffff";
-    //context.strokeStyle = "#ffffff";
-    context.lineWidth = 2;
-    context.font = "25px comic sans ms";
-
     const game = new Game(screen, context);
     
     let previous_stamp = 0;
@@ -27,7 +22,7 @@ addEventListener("load", () =>
 
         //console.log(delta_time); // 1000 / 60.6 ~ 16.5
 
-        game.update();
+        game.update(delta_time);
         game.draw();
 
         //if (game.game_over === false)

@@ -7,24 +7,57 @@ export default class Enemy
         this.game = game;
         this.width = 50;
         this.height = 50;
-        this.x = 10; //this.game.width * 0.5 - this.width * 0.5;
-        this.y = 10;
-        this.speed_x = 0.05;
-        this.speed_y = 0.05;
+        this.x = 0;
+        this.y = 0;
+        this.speed_x = 0;
+        this.speed_y = Math.random() * 4 + 1;
+        this.lives = 0;
         this.free = true;
     }
 
     draw()
     {
-        this.game.context.fillStyle = "#ff0000";
-        this.game.context.fillRect(this.x, this.y, this.width, this.height);
+        if (this.free === false)
+        {
+            this.game.context.strokeRect(this.x, this.y, this.width, this.height);
+            this.game.context.fillText(this.lives, this.x + this.width * 0.5, this.y + this.height * 0.5);
+        }
     }
 
     update()
     {
-        this.x += this.speed_x;
-        this.y += this.speed_y;
+        if (this.free === false)
+        {
+            if (this.y < 0)
+            {// float in until in view
+                this.y += 5;
+            }
 
+            if (this.x > this.game.width - this.width)
+            {// make sure always visible
+                this.x = this.game.width - this.width;
+            }
+            this.x += this.speed_x;
+            this.y += this.speed_y;
+
+            if (this.game.isCollision(this, this.game.mouse) &&
+            this.game.mouse.pressed === true &&
+            this.game.mouse.fired === false)
+            {
+                --this.lives;
+                this.game.mouse.fired = true;
+            }
+
+            if (this.isAlive() === false)
+            {
+                this.sleep();
+            }
+            
+            if (this.y > this.game.height)
+            {
+                this.sleep();
+            }
+        }
     }
 
     sleep()
@@ -35,9 +68,15 @@ export default class Enemy
     wake(x, y)
     {
         this.free = false;
-        this.x = x;
-        this.y = y;
-        this.speed_x = 0.04;
-        this.speed_y = 0.04;
+        this.lives = 2;
+        this.x = Math.random() * this.game.width;
+        this.y = -this.height;
+        //this.speed_x = 0.5;
+        this.speed_y = 0.5;
+    }
+
+    isAlive()
+    {
+        return this.lives >= 1;
     }
 }

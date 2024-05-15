@@ -1,4 +1,5 @@
 import Enemy from "./enemy.js";
+import Mouse from "./mouse.js";
 
 export default class Game
 {
@@ -13,27 +14,64 @@ export default class Game
         this.game_over = false;
         this.debug = false;
         this.enemies = [];
-        this.enemy_count = 3;
+        this.enemy_count = 25;
+        this.enemy_timer = 0;
+        this.enemy_interval = 1000;
 
-        this.enemy = new Enemy(this);
+        this.mouse = new Mouse(undefined, undefined);
 
+        this.setEnemyPool();
         this.start();
 
         window.addEventListener("resize", (event) =>
         {
             this.resize(event.target.innerWidth, event.target.innerHeight);
         });
+
+        window.addEventListener("mousedown", (event) =>
+        {
+            this.mouse.x = event.x;
+            this.mouse.y = event.y;
+            this.mouse.pressed = true;
+            this.mouse.fired = false;
+        });
+
+        window.addEventListener("mouseup", (event) =>
+        {
+            this.mouse.x = event.x;
+            this.mouse.y = event.y;
+            this.mouse.pressed = false;
+        });
     }
 
     draw()
     {
-        //this.context.fillRect(100, 100, 50, 150);
-        this.enemy.draw();
+        this.enemies.forEach((enemy) =>
+        {
+            enemy.draw();
+        });
     }
 
-    update()
+    update(delta_time)
     {
-        this.enemy.update();
+        this.enemies.forEach((enemy) =>
+        {
+            enemy.update();
+        });
+
+        this.enemy_timer += delta_time;
+
+        if (this.enemy_timer > this.enemy_interval)
+        {
+            this.enemy_timer = 0;
+
+            const enemy = this.getEnemyFromPool();
+
+            if (enemy)
+            {
+                enemy.wake();
+            }
+        }
     }
 
     start()
@@ -48,7 +86,11 @@ export default class Game
         this.width = width;
         this.height = height;
 
-        this.context.fillStyle = "#00ff00";
+        this.context.fillStyle = "#ffffff";
+        this.context.strokeStyle = "#ffffff";
+        this.context.font = "40px bangers";
+        this.context.textAlign = "center";
+        this.context.textBaseline = "middle";
     }
 
     setState(state)
@@ -100,24 +142,32 @@ export default class Game
         }
     }*/
 
-    trajectory(a, b)
+    setEnemyPool()
     {
-        const dx = a.x - b.x; // horizontal distance between a and b
-        const dy = a.y - b.y; // vertical distance between a and b
-        const distance = Math.hypot(dx, dy);
-        const aimX = dx / distance * -1; // horizontal direction between a and b
-        const aimY = dy / distance * -1; // vertical direction between a and b
+        for (let index = 0; index < this.enemy_count; index++)
+        {
+            this.enemies.push(new Enemy(this));
+        }
+    }
 
-        return [aimX, aimY, dx, dy];
+    getEnemyFromPool()
+    {
+        for (let index = 0; index < this.enemies.length; index++)
+        {
+            if (this.enemies[index].free === true)
+            {
+                return this.enemies[index];
+            }
+        }
     }
 
     isCollision(a, b)
     {
-        const dx = a.x - b.x;
-        const dy = a.y - b.y;
-        const distance = Math.hypot(dx, dy);
-        const sum = a.radius + b.radius;
-
-        return distance < sum;
+        return (
+            a.x < b.x + b.width &&
+            a.x + a.width > b.x &&
+            a.y < b.y + b.height &&
+            a.y + a.width > b.y
+        );
     }
 }
