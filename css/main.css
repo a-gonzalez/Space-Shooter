@@ -1,0 +1,57 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#screen
+{
+    background: url("/img/background1920x1080.png");
+    background-position: center;
+    background-size: cover;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.controls
+{
+    position: absolute;
+    left: 5px;
+    bottom: 5px;
+    display: flex;
+    flex-direction: column;
+}
+
+.controls > button
+{
+    background: transparent;
+    border: 1px solid #ffffff;
+    color: #ffffff;
+    font: 30px Bangers;
+    margin: 5px;
+    height: 50px;
+    width: 50px;
+    box-shadow: 1px 1px 1px 1px #000000;
+    text-shadow: 1px 1px 1px 1px #000000;
+    transition: 0.3s;
+}
+
+.controls > button:hover, .controls > button:active, .controls > button:focus
+{
+    /* background: transparent; */
+    background: #7a2c8a;
+    box-shadow: 4px 4px 4px 4px #000000;
+    text-shadow: 2px 2px 2px 2px #000000;
+}
+
+@media screen and (max-width: 900px)
+{
+    #screen
+    {
+        background-size: cover;
+        background-position: center;
+        background: url("/img/background1080x1920.png");
+    }
+}
