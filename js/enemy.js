@@ -50,11 +50,15 @@ export default class Enemy
 
             if (this.isAlive() === false)
             {
+                ++this.game.score;
+
                 this.sleep();
             }
             
             if (this.y > this.game.height)
             {
+                --this.game.lives;
+
                 this.sleep();
             }
         }
@@ -65,14 +69,14 @@ export default class Enemy
         this.free = true;
     }
 
-    wake(x, y)
+    wake()
     {
         this.free = false;
         this.lives = 2;
         this.x = Math.random() * this.game.width;
         this.y = -this.height;
         //this.speed_x = 0.5;
-        this.speed_y = 0.5;
+        this.speed_y = 1.5;
     }
 
     isAlive()

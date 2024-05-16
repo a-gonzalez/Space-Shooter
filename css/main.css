@@ -44,6 +44,7 @@
     background: #7a2c8a;
     box-shadow: 4px 4px 4px 4px #000000;
     text-shadow: 2px 2px 2px 2px #000000;
+    cursor: pointer;
 }
 
 @media screen and (max-width: 900px)
