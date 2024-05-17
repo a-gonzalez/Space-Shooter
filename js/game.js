@@ -1,4 +1,5 @@
-import Enemy from "./enemy.js";
+import { Beetlemorph, Lobstamorph, Phantommorph } from "./enemy.js";
+import Member from "./member.js";
 import Mouse from "./mouse.js";
 
 export default class Game
@@ -12,15 +13,23 @@ export default class Game
         this.width = this.screen.width;
         this.height = this.screen.height;
         this.score = 0;
-        this.score_win = 10;
+        this.score_win = 20;
         this.game_over = false;
         this.debug = false;
         this.enemies = [];
         this.enemy_count = 25;
         this.enemy_timer = 0;
         this.enemy_interval = 1000;
-        this.lives = 3;
-        this.lives_max = 5;
+        this.animation_timer = 0;
+        this.animation_interval = 150;
+        this.animation_update = false;
+        this.lives = 0;
+        //this.lives_max = 5;
+        this.lives_icon = new Image();
+        this.lives_icon.src = "img/member.png";
+        this.crew = [];
+        this.crew_image = new Image();
+        this.crew_image.src = "img/crew.png";
         this.messages = [];
 
         this.mouse = new Mouse(undefined, undefined);
@@ -30,13 +39,20 @@ export default class Game
 
         addEventListener("keyup", (event) =>
         {
-            if (event.key === "R")
+            switch (event.key)
             {
-                this.start();
-            }
-            else if (event.key === "F")
-            {
-                this.toggleFullscreen();
+                case "R" :
+                {
+                    this.start(); break;
+                }
+                case "F" :
+                {
+                    this.toggleFullscreen();
+                }
+                case "D" :
+                {
+                    this.debug = !this.debug;
+                }
             }
         });
 
@@ -100,7 +116,18 @@ export default class Game
 
     update(delta_time)
     {
-        this.enemies.forEach((enemy) =>
+        if (this.animation_timer < this.animation_interval)
+        {
+            this.animation_timer += delta_time;
+            this.animation_update = false;
+        }
+        else
+        {
+            this.animation_timer = 0;
+            this.animation_update = true;
+        }
+
+        this.enemies.reverse().forEach((enemy) =>
         {
             enemy.update();
         });
@@ -123,7 +150,7 @@ export default class Game
     start()
     {
         this.score = 0;
-        this.lives = 3;
+        this.lives = 5;
         this.game_over = false;
 
         this.messages = [];
@@ -134,6 +161,8 @@ export default class Game
         {
             enemy.sleep();
         });
+
+        this.setCrew();
     }
 
     resize(width, height)
@@ -158,11 +187,12 @@ export default class Game
 
             if (this.lives < 1)
             {
-                this.messages = ["You failed!", "The crew was eaten."];
-            }
+                //this.messages = ["You failed, cadet!", "The crew was eaten by the enemies."];
+                this.messages = ["You failed, cadet!", "All your base are belong to us."];
+            } // Zero Wing - circa 1991
             else if (this.score >= this.score_win)
             {
-                this.messages = ["Well Done!", "The crew has survived."];
+                this.messages = ["Well done, cadet!", "The crew has survived."];
             }
             this.messages.push("Press R To Restart");
         }
@@ -190,16 +220,19 @@ export default class Game
         this.context.save();
         this.context.textAlign = "left";
         this.context.fillText(`Score  ${this.score}`, 10, 30);
-        this.context.fillText("Lives", 10, 65);
+        this.context.fillText("Lives", 10, 70);
 
-        for (let index = 0; index < this.lives_max; index++)
+        /*for (let index = 0; index < this.lives_max; index++)
         {
             this.context.strokeRect(90 + 15 * index, 55, 10, 15);
-        }
+        }*/
 
         for (let index = 0; index < this.lives; index++)
         {
-            this.context.fillRect(90 + 15 * index, 55, 10, 15);
+            let member = this.crew[index];
+            //this.context.fillRect(90 + 15 * index, 55, 10, 15);
+            //this.context.drawImage(this.lives_icon, 90 + 15 * index, 55, 15, 30);
+            this.context.drawImage(this.crew_image, member.frame_x * member.width, member.frame_y * member.height, member.width, member.height, 90 + 15 * index, 55, 15, 30);
         }
 
         if (this.lives < 1 || this.score >= this.score_win)
@@ -230,7 +263,28 @@ export default class Game
     {
         for (let index = 0; index < this.enemy_count; index++)
         {
-            this.enemies.push(new Enemy(this));
+            const roll = Math.random();
+            let enemy = null;
+
+            if (roll < 0.8)
+            {
+                enemy = new Lobstamorph(this);
+            }
+            else
+            {
+                enemy = new Beetlemorph(this);
+            }
+            this.enemies.push(enemy);
+        }
+    }
+
+    setCrew()
+    {
+        this.crew = [];
+
+        for (let index = 0; index < this.lives; index++)
+        {
+            this.crew.push(new Member());
         }
     }
 

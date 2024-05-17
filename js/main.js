@@ -12,7 +12,7 @@ addEventListener("load", () =>
     const game = new Game(screen, context);
     
     let previous_stamp = 0;
-    
+
     const animate = (time_stamp) =>
     {// delta-time is the time it takes this device to serve one animation frame
         const delta_time = time_stamp - previous_stamp;
