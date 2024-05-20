@@ -21,7 +21,7 @@ export default class Game
         this.enemy_timer = 0;
         this.enemy_interval = 1000;
         this.animation_timer = 0;
-        this.animation_interval = 150;
+        this.animation_interval = 130;
         this.animation_update = false;
         this.lives = 0;
         //this.lives_max = 5;
@@ -192,7 +192,7 @@ export default class Game
             } // Zero Wing - circa 1991
             else if (this.score >= this.score_win)
             {
-                this.messages = ["Well done, cadet!", "The crew has survived."];
+                this.messages = ["Well done, cadet!", "The crew has survived this time."];
             }
             this.messages.push("Press R To Restart");
         }
@@ -263,17 +263,17 @@ export default class Game
     {
         for (let index = 0; index < this.enemy_count; index++)
         {
-            const roll = Math.random();
-            let enemy = null;
+            //const roll = Math.random();
+            let enemy = new Phantommorph(this);
 
-            if (roll < 0.8)
+            /*if (roll < 0.8)
             {
                 enemy = new Lobstamorph(this);
             }
             else
             {
                 enemy = new Beetlemorph(this);
-            }
+            }*/
             this.enemies.push(enemy);
         }
     }

@@ -95,6 +95,7 @@ class Enemy
         this.x = Math.random() * this.game.width * 0.9;
         this.y = -this.height;
         this.frame_y = Math.floor(Math.random() * 4);
+        this.frame_x = 0;
         this.speed_x = 0;
         this.speed_y = 0.9; //Math.random() * 4 + 1;
     }
@@ -136,7 +137,7 @@ export class Beetlemorph extends Enemy
 
         if (this.free === false)
         {
-            if (this.isAlive())
+            if (this.isAlive() === true)
             {
                 this.hit();
             }
@@ -147,7 +148,6 @@ export class Beetlemorph extends Enemy
     {
         super.wake();
 
-        this.frame_x = 0;
         this.speed_y = Math.random() * 2 + 0.2;
         this.lives = 1;
     }
@@ -185,7 +185,7 @@ export class Lobstamorph extends Enemy
                 this.max = 7;
             }
 
-            if (this.isAlive())
+            if (this.isAlive() === true)
             {
                 this.hit();
 
@@ -201,7 +201,6 @@ export class Lobstamorph extends Enemy
     {
         super.wake();
 
-        this.frame_x = 0;
         this.speed_y = Math.random() * 0.5 + 0.2;
         this.lives = 3;
     }
@@ -215,7 +214,7 @@ export class Phantommorph extends Enemy
 
         this.width = 100;
         this.height = 100;
-        this.frame_max = 12;
+        this.frame_max = 14;
 
         this.image.src = "img/phantommorph100x100.png";
     }
@@ -226,9 +225,26 @@ export class Phantommorph extends Enemy
 
         if (this.free === false)
         {
-            if (this.isAlive() && this.game.game_over === false)
+            if (this.x <= 0 || this.x >= this.game.width - this.width)
+            {// bounce left or left
+                this.speed_x *= -1;
+            }
+
+            if (this.isAlive() === true)
             {
                 this.hit();
+
+                if (this.game.animation_update === true)
+                {
+                    if (this.frame_x < this.max)
+                    {
+                        ++this.frame_x;
+                    }
+                    else
+                    {
+                        this.frame_x = this.min;
+                    }
+                }
             }
         }
     }
@@ -237,8 +253,10 @@ export class Phantommorph extends Enemy
     {
         super.wake();
 
-        this.frame_x = 0;
-        this.speed_y = Math.random() * 0.8 + 0.2;
-        this.lives = 8;
+        this.speed_x = Math.random() * 2 - 1;
+        this.speed_y = Math.random() * 0.5 + 0.2;
+        this.lives = 1;
+        this.min = 0;
+        this.max = 2;
     }
 }
