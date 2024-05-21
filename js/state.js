@@ -1,8 +1,10 @@
+import { SOUNDS } from "./audio.js";
+
 class State
 {
     constructor(game, enemy)
     {
-        //console.log(`${this.constructor.name} .ctor @ ${new Date().toLocaleString()}`);
+        console.log(`${this.constructor.name} .ctor @ ${new Date().toLocaleString()}`);
 
         this.game = game;
         this.enemy = enemy;
@@ -51,6 +53,8 @@ export class Phasing extends State
             this.enemy.y += 30;
             this.enemy.speed_x = 0;
             this.enemy.speed_y = 2;
+
+            this.game.audio.play(SOUNDS.Slide);
         }
     }
 }
@@ -62,6 +66,8 @@ export class Imploding extends State
         this.enemy.min = 6;
         this.enemy.max = this.enemy.frame_max + 1;
         this.enemy.frame_x = this.enemy.min;
+
+        this.game.audio.play(Math.floor(Math.random() * 4 + 1));
     }
 }
 

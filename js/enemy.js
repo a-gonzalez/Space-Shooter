@@ -1,4 +1,5 @@
 import { STATES, Flying, Phasing, Imploding } from "./state.js";
+import { SOUNDS } from "./audio.js";
 
 class Enemy
 {
@@ -59,11 +60,16 @@ class Enemy
             this.x += this.speed_x;
             this.y += this.speed_y;
             
-            if (this.y > this.game.height && this.game.game_over === false)
+            if (this.y > this.game.height)
             {
-                --this.game.lives;
-
                 this.sleep();
+
+                if (this.game.game_over === false)
+                {
+                    --this.game.lives;
+
+                    this.game.audio.play(SOUNDS.Scream);
+                }
             }
 
             if (this.isAlive() === false)

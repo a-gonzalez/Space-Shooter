@@ -1,4 +1,5 @@
 import { Beetlemorph, Lobstamorph, Phantommorph } from "./enemy.js";
+import { Audio, SOUNDS } from "./audio.js";
 import Member from "./member.js";
 import Mouse from "./mouse.js";
 
@@ -24,9 +25,7 @@ export default class Game
         this.animation_interval = 130;
         this.animation_update = false;
         this.lives = 0;
-        //this.lives_max = 5;
-        this.lives_icon = new Image();
-        this.lives_icon.src = "img/member.png";
+        this.audio = new Audio();
         this.crew = [];
         this.crew_image = new Image();
         this.crew_image.src = "img/crew.png";
@@ -35,7 +34,7 @@ export default class Game
         this.mouse = new Mouse(undefined, undefined);
 
         this.setEnemyPool();
-        this.start();
+        //this.start();
 
         addEventListener("keyup", (event) =>
         {
@@ -47,7 +46,7 @@ export default class Game
                 }
                 case "F" :
                 {
-                    this.toggleFullscreen();
+                    this.toggleFullscreen(); break;
                 }
                 case "D" :
                 {
@@ -163,6 +162,7 @@ export default class Game
         });
 
         this.setCrew();
+        this.audio.play(SOUNDS.New);
     }
 
     resize(width, height)
@@ -189,10 +189,14 @@ export default class Game
             {
                 //this.messages = ["You failed, cadet!", "The crew was eaten by the enemies."];
                 this.messages = ["You failed, cadet!", "All your base are belong to us."];
+
+                this.audio.play(SOUNDS.Lose);
             } // Zero Wing - circa 1991
             else if (this.score >= this.score_win)
             {
                 this.messages = ["Well done, cadet!", "The crew has survived this time."];
+
+                this.audio.play(SOUNDS.Win);
             }
             this.messages.push("Press R To Restart");
         }
@@ -208,11 +212,6 @@ export default class Game
         {
             document.exitFullscreen();
         }
-    }
-
-    setState(state)
-    {
-        
     }
 
     setGameText(context)
