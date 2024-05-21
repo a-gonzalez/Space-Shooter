@@ -129,7 +129,7 @@ export default class Game
 
         this.enemies.reverse().forEach((enemy) =>
         {
-            enemy.update();
+            enemy.update(delta_time);
         });
 
         this.enemy_timer += delta_time;

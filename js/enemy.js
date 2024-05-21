@@ -1,3 +1,5 @@
+import { STATES, Flying, Phasing, Imploding } from "./state.js";
+
 class Enemy
 {
     constructor(game)
@@ -215,38 +217,18 @@ export class Phantommorph extends Enemy
         this.width = 100;
         this.height = 100;
         this.frame_max = 14;
+        this.state_timer = 0;
+        this.state_interval = Math.random() * 2500 + 1000;
+        this.states = [new Flying(game, this), new Phasing(game, this), new Imploding(game, this)];
+        this.state = null;
 
         this.image.src = "img/phantommorph100x100.png";
     }
 
-    update()
+    setState(state)
     {
-        super.update();
-
-        if (this.free === false)
-        {
-            if (this.x <= 0 || this.x >= this.game.width - this.width)
-            {// bounce left or left
-                this.speed_x *= -1;
-            }
-
-            if (this.isAlive() === true)
-            {
-                this.hit();
-
-                if (this.game.animation_update === true)
-                {
-                    if (this.frame_x < this.max)
-                    {
-                        ++this.frame_x;
-                    }
-                    else
-                    {
-                        this.frame_x = this.min;
-                    }
-                }
-            }
-        }
+        this.state = this.states[state];
+        this.state.setState();
     }
 
     wake()
@@ -256,7 +238,72 @@ export class Phantommorph extends Enemy
         this.speed_x = Math.random() * 2 - 1;
         this.speed_y = Math.random() * 0.5 + 0.2;
         this.lives = 1;
-        this.min = 0;
-        this.max = 2;
+
+        this.setState(Math.floor(Math.random() * 2));
+    }
+
+    update(delta_time)
+    {
+        super.update();
+
+        if (this.free === false)
+        {
+            this.state.update();
+
+            if (this.x <= 0 || this.x >= this.game.width - this.width)
+            {// bounce left or left
+                this.speed_x *= -1;
+            }
+
+            if (this.isAlive() === true)
+            {
+                if (this.state_timer < this.state_interval)
+                {
+                    this.state_timer += delta_time;
+                }
+                else
+                {
+                    this.state_timer = 0;
+                    this.morph();
+                }
+            }
+        }
+    }
+
+    hit()
+    {
+        super.hit();
+
+        if (this.isAlive() === false)
+        {
+            this.setState(STATES.Imploding);
+        }
+    }
+
+    morph()
+    {
+        if (this.state === this.states[STATES.Flying])
+        {
+            this.setState(STATES.Phasing);
+        }
+        else
+        {
+            this.setState(STATES.Flying);
+        }
+    }
+
+    handleFrames()
+    {
+        if (this.game.animation_update === true)
+        {
+            if (this.frame_x < this.max)
+            {
+                ++this.frame_x;
+            }
+            else
+            {
+                this.frame_x = this.min;
+            }
+        }
     }
 }

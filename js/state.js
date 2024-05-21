@@ -1,88 +1,72 @@
 class State
 {
-    constructor(game)
+    constructor(game, enemy)
     {
-        console.log(`${this.constructor.name} .ctor @ ${new Date().toLocaleString()}`);
+        //console.log(`${this.constructor.name} .ctor @ ${new Date().toLocaleString()}`);
 
-        
-    }
-
-    draw(context)
-    {
-        
+        this.game = game;
+        this.enemy = enemy;
     }
 
     update(delta_time)
     {
-        
-    }
-}
-
-export class Idle extends State
-{
-    constructor(game)
-    {
-        super(game);
-    }
-
-    setState()
-    {
-        
-    }
-
-    update(delta_time)
-    {
-        super.update(delta_time);
-
-        
-    }
-}
-
-export class Charge extends State
-{
-    constructor(game)
-    {
-        super(game);
-    }
-
-    setState()
-    {
-        
-    }
-
-    update(delta_time)
-    {
-        super.update(delta_time);
 
     }
 }
 
-export class Swarm extends State
+export class Flying extends State
 {
-    constructor(game)
-    {
-        super(game);
-    }
-
     setState()
     {
-        
-    }
-
-    draw(context)
-    {
-        super.draw(context);
+        this.enemy.min = 0;
+        this.enemy.max = 2;
+        this.enemy.frame_x = this.enemy.min;
     }
 
     update(delta_time)
     {
-        super.update(delta_time);
+        this.enemy.hit();
+        this.enemy.handleFrames();
+    }
+}
+
+export class Phasing extends State
+{
+    setState()
+    {
+        this.enemy.min = 3;
+        this.enemy.max = 5;
+        this.enemy.speed_x = Math.random() * 2 - 1;
+        this.enemy.speed_y = Math.random() * 0.5 + 0.2;
+        this.enemy.frame_x = this.enemy.min;
+    }
+
+    update(delta_time)
+    {
+        this.enemy.handleFrames();
+
+        if (this.game.isCollision(this.enemy, this.game.mouse) &&
+            this.game.mouse.pressed === true)
+        {
+            this.enemy.y += 30;
+            this.enemy.speed_x = 0;
+            this.enemy.speed_y = 2;
+        }
+    }
+}
+
+export class Imploding extends State
+{
+    setState()
+    {
+        this.enemy.min = 6;
+        this.enemy.max = this.enemy.frame_max + 1;
+        this.enemy.frame_x = this.enemy.min;
     }
 }
 
 export const STATES = {
-    Idle : 0,
-    Charge : 1,
-    Swarm : 2
+    Flying : 0,
+    Phasing : 1,
+    Imploding : 2
 };
-
